@@ -28,8 +28,6 @@ void stringifyBoard(Board board)
 int main()
 {
     srand(time(NULL)); // initialize the random seed
-    
-    bool losed = false;
 
     Board board;
     Ai ai;
@@ -41,9 +39,25 @@ int main()
     board.opponentAction();
     board.opponentAction();
 
+    // board.setTile(1, 1, 4);
+    // board.setTile(1, 2, 4);
+
+    // stringifyBoard(board);
+
+    // board.agentAction(LEFT);
+
+    stringifyBoard(board);
+
     while (!ai.losed)
     {
+        auto t1 = high_resolution_clock::now();
         Direction direction = ai.suggest(board);
+        auto t2 = high_resolution_clock::now();
+
+        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+
+        std::cout << "AI suggests: " << time_span.count() << " seconds." << endl;
+
 
         board.agentAction(direction);
         board.opponentAction();

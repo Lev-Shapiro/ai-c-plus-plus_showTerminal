@@ -7,6 +7,10 @@
 
 using namespace std;
 
+void reverse(int arr[], int n)
+{
+    reverse(arr, arr + n);
+}
 class Board
 {
 public:
@@ -35,9 +39,6 @@ public:
     /**------------------------------------------------------------------------
      * ?                          BOARD CONTROLLER
      * @setTile           : add {value} at board[i][j]
-     * @setTiles          : loop setTile
-     * @setRow            : replace row in board ( vertical or horizontal line )
-     * @getRow            : get row from board ( vertical or horizontal line )
      * @newRandomTile     : 80% returns 2 and 20% returns BOARD_SIZE
      *------------------------------------------------------------------------**/
 
@@ -46,35 +47,11 @@ public:
         board[y][x] = value;
     }
 
-    void setRow(Axis direction, int line, vector<int> row)
-    {
-        for (int i = 0; i < BOARD_SIZE; i++)
-        {
-            direction == VERTICAL
-                ? (board[i][line] = row[i])
-                : (board[line][i] = row[i]);
-        }
-    }
-
-    vector<int> getRow(Axis direction, int line)
-    {
-        vector<int> row(BOARD_SIZE);
-
-        for (int i = 0; i < BOARD_SIZE; i++)
-        {
-            row.push_back(
-                direction == VERTICAL
-                    ? board[i][line]
-                    : board[line][i]);
-        }
-
-        return row;
-    }
-
     int newRandomTile()
     {
-        return ((float)rand() / RAND_MAX < 0.8) ? 2 : BOARD_SIZE;
+        return ((float)rand() / RAND_MAX < 0.8) ? 2 : 4;
     }
+    
     /**------------------------------------------------------------------------
      * ?                       HELPER FUNCTIONS
      * @findEmptyPlaces             : returns coords of all empty places
@@ -194,53 +171,49 @@ public:
     {
         Axis axis = (direction == DOWN || direction == UP) ? VERTICAL : HORIZONTAL;
 
-        for (int x = 0; x < BOARD_SIZE; x++)
+        for (int i = 0; i < BOARD_SIZE; i++)
         {
-            vector<int> arr = getRow(axis, x);
+            int prevValue = 0, prevIndex = -1;
 
-            // remove all 0 from array
-            arr.erase(remove(arr.begin(), arr.end(), 0), arr.end());
-
-            arr.shrink_to_fit();
-
-            if (direction == DOWN || direction == RIGHT)
+            for (int _ = 0; _ < BOARD_SIZE; _++)
             {
-                reverse(arr.begin(), arr.end());
-            }
+                int j = (direction == UP || direction == LEFT) ? BOARD_SIZE - 1 - _ : _;
+                int a = j, b = i;
 
-            vector<int> arrCopy;
-
-            while (arr.size() != 0)
-            {
-                if (arr.size() != 1 && arr[1] == arr[0])
+                if (axis == HORIZONTAL)
                 {
-                    arrCopy.push_back(arr[1] * 2);
-                    arr.erase(arr.begin());
-                }
-                else
-                {
-                    arrCopy.push_back(arr[0]);
+                    a = i;
+                    b = j;
                 }
 
-                arr.erase(arr.begin());
+                int currValue = board[a][b];
 
-                arr.shrink_to_fit();
+                if (currValue == prevValue)
+                {
+                    currValue *= 2;
+                    prevValue = 0;
+                }
+
+                if (prevValue != 0 && currValue == 0)
+                {
+                    currValue = prevValue;
+                    prevValue = 0;
+                }
+
+                //* update data
+                board[a][b] = currValue;
+
+                if (prevIndex >= 0)
+                    (axis == HORIZONTAL)
+                        ? board[a][prevIndex] = prevValue
+                        : board[prevIndex][b] = prevValue;
+
+                if (currValue)
+                {
+                    prevValue = currValue;
+                    prevIndex = j;
+                }
             }
-
-            arrCopy.shrink_to_fit();
-            for (int z = arrCopy.size(); z < BOARD_SIZE; z++)
-            {
-                arrCopy.push_back(0);
-            }
-
-            arrCopy.shrink_to_fit();
-
-            if (direction == DOWN || direction == RIGHT)
-            {
-                reverse(arrCopy.begin(), arrCopy.end());
-            }
-
-            setRow(axis, x, arrCopy);
         }
     }
 

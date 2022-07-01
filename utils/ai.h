@@ -75,7 +75,7 @@ public:
 
             boardCopy.agentAction(direction);
 
-            int a = 2;
+            int a = 3;
             
             if(boardCopy.findEmptyPlaces().size() < 3) {
                 a = 3;
