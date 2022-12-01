@@ -164,7 +164,7 @@ public:
     /**------------------------------------------------------------------------
      * ?                         PLAYERS ACTIONS
      * @agentAction    : move left/right/down/up
-     * @opponentAction : add number 2 or BOARD_SIZE to one of empty tiles
+     * @opponentAction : add number 2 or 4 to one of empty tiles
      *------------------------------------------------------------------------**/
 
     void agentAction(Direction direction)
